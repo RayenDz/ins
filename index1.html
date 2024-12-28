@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الطلاب</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            margin: 0;
+            background-color: #f4f4f9;
+            direction: rtl;
+            text-align: right;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        form input[type="text"], form input[type="date"], form select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        form button:hover {
+            background-color: #218838;
+        }
+
+        input[type="text"]::placeholder {
+            color: #999;
+            text-align: right;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: right;
+        }
+
+        th {
+            background-color: #f8f8f8;
+        }
+
+        input#searchInput {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: right;
+        }
+
+        @media (max-width: 600px) {
+            form, table {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>تسجيل الطلاب</h2>
+    <form id="studentForm">
+        <label for="lastname">اللقب:</label>
+        <input type="text" id="lastname" name="lastname" placeholder="أدخل اللقب">
+
+        <label for="firstname">الاسم:</label>
+        <input type="text" id="firstname" name="firstname" placeholder="أدخل الاسم">
+
+        <label for="birthdate">تاريخ الازدياد:</label>
+        <input type="date" id="birthdate" name="birthdate">
+
+        <label for="gender">الجنس:</label>
+        <select id="gender" name="gender">
+            <option value="ذكر">ذكر</option>
+            <option value="أنثى">أنثى</option>
+        </select>
+
+        <label for="level">المستوى:</label>
+        <input type="text" id="level" name="level" placeholder="أدخل المستوى">
+
+        <button type="button" onclick="addStudent()">إضافة الطالب</button>
+    </form>
+
+    <h2>البحث عن الطلاب</h2>
+    <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="ابحث...">
+
+    <h2>قائمة الطلاب</h2>
+    <table id="studentsTable">
+        <thead>
+            <tr>
+                <th>اللقب</th>
+                <th>الاسم</th>
+                <th>تاريخ الازدياد</th>
+                <th>الجنس</th>
+                <th>المستوى</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- هنا سيتم إضافة صفوف الطلاب -->
+        </tbody>
+    </table>
+
+    <script>
+        async function addStudent() {
+            const lastname = document.getElementById('lastname').value;
+            const firstname = document.getElementById('firstname').value;
+            const birthdate = document.getElementById('birthdate').value;
+            const gender = document.getElementById('gender').value;
+            const level = document.getElementById('level').value;
+
+            const data = { lastname, firstname, birthdate, gender, level };
+
+            try {
+                const response = await fetch("https://script.google.com/macros/s/AKfycbxxxQYJdz1D_L3sKn6_VqSlj9lxIdBjG5dx7zS5K9XuSwzad29oVHcU4dNIauUUbz7nUA/exec", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.text();
+                if (result === "Success") {
+                    alert("تمت إضافة الطالب بنجاح!");
+                    document.getElementById('studentForm').reset();
+                } else {
+                    alert("حدث خطأ: " + result);
+                }
+            } catch (error) {
+                alert("تعذر الاتصال بالخادم: " + error.message);
+            }
+        }
+
+        function searchTable() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const rows = document.getElementById('studentsTable').getElementsByTagName('tr');
+
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let match = false;
+                for (let j = 0; j < cells.length; j++) {
+                    if (cells[j].innerHTML.toLowerCase().indexOf(searchInput) > -1) {
+                        match = true;
+                        break;
+                    }
+                }
+                rows[i].style.display = match ? '' : 'none';
+            }
+        }
+    </script>
+</body>
+</html>
